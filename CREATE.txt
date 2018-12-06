@@ -1,0 +1,63 @@
+create table users (user_id int, first_name varchar (10), last_name varchar(10), gender varchar(6), join_data date,user_name varchar (15), primary key(user_id)) engine=innodb;
+
+
+create table followlist (user_id int, follower_user_id int, primary key (user_id, follower_user_id), foreign key (user_id) references users (user_id) on delete cascade on update cascade,foreign key (follower_user_id) references users (user_id) on delete cascade on update cascade) engine=innodb;
+
+
+
+create table freindlist (user_id int, freind_user_id int, primary key (user_id, freind_user_id), foreign key (user_id) references users (user_id) on delete cascade on update cascade,foreign key (follower_user_id) references users (user_id) on delete cascade on update cascade) engine=innodb;
+
+
+
+
+
+
+create table comment (comment_id int, review_id int, user_id int, primary key(comment_id), foreign key (user_id) references users (user_id) on delete cascade on update cascade) engine=innodb;
+alter table comment add unique (review_id);
+
+
+create table locations (location_id int,location_name varchar(20),add_date date, primary key (location_id))engine=innodb;
+
+
+create table place_level2 (dname1 varchar(20),dcode1 int,dname2 varchar(10),dcode2 varchar(2), country varchar(3), primary key (dname1,dcode1)) engine=innodb;
+
+
+create table place_level1 (postal_code int, place_name varchar(20), nearest_lat real,nearest_long real,dname1 varchar(20),dcode1 int, primary key (postal_code,place_name),foreign key (dname1,dcode1) references place_level2 (dname1,dcode1) on delete no action on update cascade) engine=innodb;
+
+create table review (review_id int, rating int, location_id int, user_id int, primary key (review_id), foreign key (review_id) references comment (review_id) on delete cascade on update cascade, foreign key (user_id) references users (user_id) on delete cascade on update cascade,foreign key (location_id) references locations (location_id) on update cascade on delete cascade) engine=innodb;
+
+
+
+alter table review add unique (location_id);
+
+
+create table checkins (user_id int,location_id int, checkin_date date, checkin_time time, checkin_lat real, checkin_long real, dist_lat_long real, postal_code int, place_name varchar(20), primary key(user_id,checkin_date,checkin_time), foreign key (user_id) references users (user_id) on delete cascade on update cascade,foreign key (location_id) references locations(location_id) on delete cascade on update cascade,foreign key(postal_code,place_name) references place_level1 (postal_code,place_name) on delete cascade on update cascade) engine=innodb;
+alter table checkins add unique (place_name);
+alter table checkins add unique (postal_code);
+alter table checkins add unique (location_id);
+
+
+alter table place_level1 add unique (dname1);
+alter table place_level1 add unique (dcode1);
+
+
+
+
+
+create table checkin_friends (user_id int,checkin_date date,checkin_time time,friend_user_id int,primary key (user_id,checkin_date,checkin_time,friend_user_id), foreign key (user_id,checkin_date,checkin_time) references checkins (user_id,checkin_date,checkin_time) on delete cascade on update cascade)engine=innodb;
+
+
+
+
+/usr/local/mysql5/bin/mysqlimport -u ppatel -p2486 --local ppatel users.txt
+/usr/local/mysql5/bin/mysqlimport -u ppatel -p2486 --local ppatel followlist.txt
+/usr/local/mysql5/bin/mysqlimport -u ppatel -p2486 --local ppatel friendlist.txt
+/usr/local/mysql5/bin/mysqlimport -u ppatel -p2486 --local ppatel locations.txt
+/usr/local/mysql5/bin/mysqlimport -u ppatel -p2486 --local ppatel place_level1.txt
+/usr/local/mysql5/bin/mysqlimport -u ppatel -p2486 --local ppatel place_level2.txt
+/usr/local/mysql5/bin/mysqlimport -u ppatel -p2486 --local ppatel checkins.txt
+
+
+
+
+
